@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UX Case Study - Robinhood Cash Out Redesign</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300;1,8..60,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --ink: #0e0e0e;
+  --ink-2: #2a2a2a;
+  --ink-3: #555;
+  --ink-4: #888;
+  --paper: #f7f4ef;
+  --paper-2: #eeeae3;
+  --paper-3: #e4dfd6;
+  --green: #00c805;
+  --green-dark: #008f03;
+  --green-light: #e8fde8;
+  --red: #d93025;
+  --red-light: #fde8e8;
+  --amber: #c97b00;
+  --amber-light: #fdf4e8;
+  --rule: #d4cfc8;
+  --max-w: 780px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 18px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar {
+  position: fixed; top: 0; left: 0;
+  height: 3px; background: var(--green);
+  width: 0%; transition: width 0.1s linear;
+  z-index: 1000;
+}
+
+/* ===== NAV ===== */
+.site-nav {
+  position: sticky; top: 0;
+  background: rgba(247,244,239,0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--rule);
+  padding: 14px 40px;
+  display: flex; align-items: center; justify-content: space-between;
+  z-index: 100;
+}
+.nav-brand {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px; font-weight: 400;
+  color: var(--ink-4);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.nav-links {
+  display: flex; gap: 24px; list-style: none;
+}
+.nav-links a {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; color: var(--ink-4);
+  text-decoration: none; letter-spacing: 0.3px;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--ink); }
+
+/* ===== LAYOUT ===== */
+.container {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.full-bleed {
+  background: var(--paper-2);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  padding: 60px 0;
+  margin: 60px 0;
+}
+
+section { padding: 60px 0; border-bottom: 1px solid var(--rule); }
+section:last-child { border-bottom: none; }
+
+/* ===== TYPOGRAPHY ===== */
+h1 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -1px;
+  color: var(--ink);
+}
+h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(24px, 4vw, 36px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+  color: var(--ink);
+  margin-bottom: 20px;
+}
+h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 22px; font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+h4 {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--ink-4);
+  margin-bottom: 16px;
+}
+p {
+  color: var(--ink-2);
+  margin-bottom: 20px;
+  font-weight: 300;
+}
+p:last-child { margin-bottom: 0; }
+
+.lead {
+  font-size: 20px; line-height: 1.65;
+  color: var(--ink-2);
+  font-weight: 300;
+  font-style: italic;
+}
+
+.section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--green-dark);
+  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-label::after {
+  content: '';
+  flex: 1; height: 1px; background: var(--rule);
+  max-width: 60px;
+}
+
+blockquote {
+  border-left: 3px solid var(--green);
+  padding: 4px 0 4px 24px;
+  margin: 32px 0;
+  font-style: italic;
+  font-size: 20px;
+  color: var(--ink-2);
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+/* ===== HERO ===== */
+.hero {
+  padding: 80px 0 60px;
+  border-bottom: 1px solid var(--rule);
+}
+.hero-meta {
+  display: flex; gap: 24px; align-items: center;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+.hero-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 1px; text-transform: uppercase;
+  padding: 4px 12px; border-radius: 2px;
+}
+.tag-case { background: var(--ink); color: var(--paper); }
+.tag-fintech { background: var(--green-light); color: var(--green-dark); border: 1px solid #b3e8b3; }
+.tag-ux { background: var(--paper-3); color: var(--ink-3); }
+
+.hero-date {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; color: var(--ink-4);
+}
+
+.hero h1 { margin-bottom: 24px; }
+.hero .lead { margin-bottom: 40px; }
+
+.hero-stats {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 1px; background: var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: 4px; overflow: hidden;
+  margin-top: 48px;
+}
+.hero-stat {
+  background: var(--paper);
+  padding: 20px 24px;
+}
+.hero-stat .num {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px; font-weight: 900;
+  line-height: 1; margin-bottom: 4px;
+}
+.hero-stat .num.red { color: var(--red); }
+.hero-stat .num.green { color: var(--green-dark); }
+.hero-stat .stat-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; color: var(--ink-4);
+  text-transform: uppercase; letter-spacing: 0.8px;
+}
+
+.author-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 20px 0;
+  border-top: 1px solid var(--rule);
+  margin-top: 32px;
+}
+.author-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 16px; font-weight: 700; color: var(--paper);
+  flex-shrink: 0;
+}
+.author-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px; font-weight: 500; color: var(--ink);
+}
+.author-role {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; color: var(--ink-4); margin-top: 2px;
+}
+
+/* ===== ANNOTATION SCREENS ===== */
+.annotated-screen {
+  background: var(--paper);
+  border-radius: 14px;
+  padding: 20px;
+  margin: 32px 0;
+  position: relative;
+}
+.screen-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; color: #666;
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.mock-phone-row {
+  display: flex; gap: 20px; align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.mini-phone {
+  background: #141414;
+  border-radius: 20px;
+  border: 5px solid #1a1a1a;
+  overflow: hidden;
+  width: 160px;
+  flex-shrink: 0;
+}
+.mini-notch {
+  width: 60px; height: 16px;
+  background: #0e0e0e;
+  border-radius: 0 0 10px 10px;
+  margin: 0 auto;
+}
+.mini-screen { padding: 10px 12px 14px; }
+.mini-topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 4px 0 10px;
+  border-bottom: 1px solid #1e1e1e;
+  margin-bottom: 10px;
+  font-size: 9px; color: #666;
+}
+.mini-green { color: #00c805; }
+.mini-row {
+  padding: 7px 8px;
+  border-radius: 6px;
+  font-size: 9px;
+  color: #888;
+  display: flex; justify-content: space-between;
+  border-bottom: 1px solid #1a1a1a;
+}
+.mini-row.active { color: #00c805; }
+.mini-balance {
+  background: #111;
+  border: 1px solid #1e1e1e;
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 8px;
+}
+.mini-balance .b-label { font-size: 8px; color: #555; margin-bottom: 3px; }
+.mini-balance .b-val { font-size: 14px; font-weight: 700; color: #fff; }
+.mini-balance .b-sub { font-size: 7px; color: #f5a623; margin-top: 2px; }
+.mini-input {
+  background: #111; border: 1px solid #2a2a2a; border-radius: 6px;
+  padding: 6px; text-align: center;
+  font-size: 16px; font-weight: 700; color: #fff;
+  margin-bottom: 6px;
+}
+.mini-hint { font-size: 7px; color: #555; text-align: center; margin-bottom: 8px; }
+.mini-btn {
+  width: 100%; padding: 7px; border-radius: 20px;
+  background: #00c805; color: #000;
+  font-size: 9px; font-weight: 700; border: none;
+}
+.mini-warn {
+  background: rgba(245,166,35,0.1); border: 1px solid rgba(245,166,35,0.2);
+  border-radius: 6px; padding: 6px; font-size: 8px; color: #f5a623;
+  margin-bottom: 8px; line-height: 1.4;
+}
+.mini-2fa {
+  background: #111; border: 1px solid #222; border-radius: 8px;
+  padding: 10px; text-align: center;
+}
+.mini-2fa .icon { font-size: 16px; margin-bottom: 4px; }
+.mini-2fa .title { font-size: 9px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+.mini-2fa .sub { font-size: 7px; color: #666; margin-bottom: 8px; }
+.mini-digits { display: flex; gap: 4px; justify-content: center; margin-bottom: 6px; }
+.mini-digit {
+  width: 18px; height: 22px; background: #141414;
+  border: 1px solid #2a2a2a; border-radius: 4px;
+  font-size: 10px; font-weight: 700; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+}
+.mini-digit.active { border-color: #00c805; }
+.mini-info-row { display: flex; justify-content: space-between; font-size: 7px; color: #555; padding: 3px 0; }
+.mini-success-text { text-align: center; padding: 8px 0; }
+.mini-success-text .icon { font-size: 22px; margin-bottom: 6px; }
+.mini-success-text h5 { font-size: 10px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.mini-success-text p { font-size: 7px; color: #666; margin-bottom: 6px; }
+.mini-success-text .eta-box {
+  background: #111; border: 1px solid #222; border-radius: 6px;
+  padding: 6px; font-size: 7px; color: #444;
+}
+
+.annotation-list {
+  flex: 1;
+  display: flex; flex-direction: column; gap: 10px;
+  min-width: 200px;
+}
+.annotation {
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.ann-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--red); color: #fff;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; font-weight: 500;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.ann-text {
+  font-family: 'Source Serif 4', serif;
+  font-size: 13px; color: var(--ink-3); line-height: 1.5; font-weight: 300;
+}
+.ann-text strong { color: var(--ink); font-weight: 600; }
+
+/* ===== COMPETITIVE TABLE ===== */
+.comp-table {
+  width: 100%; border-collapse: collapse;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  margin: 24px 0;
+}
+.comp-table th {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+.comp-table th:first-child { width: 180px; }
+.comp-table td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink-3);
+  vertical-align: top;
+}
+.comp-table tr:nth-child(even) td { background: var(--paper-2); }
+.comp-table tr:hover td { background: var(--paper-3); }
+.comp-table td:first-child { font-weight: 500; color: var(--ink); }
+.check { color: var(--green-dark); }
+.cross { color: var(--red); }
+.partial { color: var(--amber); }
+
+/* ===== PERSONA CARD ===== */
+.persona-card {
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 32px 0;
+}
+.persona-header {
+  background: var(--ink);
+  padding: 24px 28px;
+  display: flex; gap: 20px; align-items: center;
+}
+.persona-avatar {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, #00c805, #008f03);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 22px; font-weight: 700; color: #fff;
+  flex-shrink: 0;
+}
+.persona-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px; font-weight: 700; color: #fff;
+}
+.persona-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; color: #888; margin-top: 4px;
+}
+.persona-body {
+  padding: 24px 28px;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.persona-section h5 {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--ink-4); margin-bottom: 10px;
+}
+.persona-section ul {
+  list-style: none; padding: 0;
+}
+.persona-section ul li {
+  font-size: 14px; color: var(--ink-2);
+  padding: 4px 0;
+  border-bottom: 1px solid var(--rule);
+  font-weight: 300;
+  display: flex; align-items: flex-start; gap: 8px;
+}
+.persona-section ul li::before { content: '-'; color: var(--ink-4); flex-shrink: 0; }
+.persona-quote {
+  padding: 20px 28px;
+  background: var(--green-light);
+  border-top: 1px solid #b3e8b3;
+  font-style: italic;
+  font-size: 15px; color: var(--ink-2);
+  line-height: 1.6;
+}
+.persona-quote::before { content: '"'; font-size: 40px; color: var(--green); line-height: 0; vertical-align: -16px; margin-right: 4px; }
+
+/* ===== FLOW DIAGRAM ===== */
+.flow-diagram {
+  display: flex; align-items: center;
+  gap: 0; overflow-x: auto;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 24px 0;
+  margin: 24px 0;
+}
+.flow-node {
+  display: flex; flex-direction: column; align-items: center;
+  flex-shrink: 0;
+}
+.flow-box {
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; font-weight: 500;
+  text-align: center;
+  min-width: 80px;
+  line-height: 1.3;
+}
+.flow-box.neutral { background: var(--paper-3); color: var(--ink); border: 1px solid var(--rule); }
+.flow-box.problem { background: var(--red-light); color: var(--red); border: 1px solid #f0b8b8; }
+.flow-box.ok { background: var(--green-light); color: var(--green-dark); border: 1px solid #b3e8b3; }
+.flow-tap {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px; color: var(--ink-4);
+  margin-top: 4px;
+}
+.flow-arrow-svg {
+  width: 28px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.new-flow-diagram {
+  display: flex; align-items: center;
+  gap: 0; padding: 24px 0; margin: 24px 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ===== PAIN POINT CARDS ===== */
+.pain-grid {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px; margin: 32px 0;
+  width: 100%;
+}
+.pain-card {
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 24px;
+  position: relative;
+  overflow: visible;
+  min-width: 0; /* prevent grid items from overflowing their column */
+  white-space: normal !important;
+}
+
+.pain-card * { white-space: normal !important; min-width: 0; }
+.pain-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px; background: var(--red);
+}
+.pain-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--red); margin-bottom: 8px;
+}
+.pain-card h3 {
+  font-size: 15px; margin-bottom: 8px;
+  font-family: 'Source Serif 4', serif;
+  font-weight: 600; line-height: 1.3;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+.pain-card p {
+  font-size: 13px; color: var(--ink-3);
+  line-height: 1.6; margin-bottom: 0;
+  font-weight: 300;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+
+/* ===== SOLUTION CARDS ===== */
+.solution-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 20px; margin: 32px 0;
+}
+.solution-card {
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.solution-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px; background: var(--green);
+}
+.solution-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--green-dark); margin-bottom: 8px;
+}
+.solution-card h3 {
+  font-size: 15px; margin-bottom: 8px;
+  font-family: 'Source Serif 4', serif;
+  font-weight: 600; line-height: 1.3;
+}
+.solution-card p {
+  font-size: 13px; color: var(--ink-3);
+  line-height: 1.6; margin-bottom: 0;
+  font-weight: 300;
+}
+
+/* ===== BEFORE/AFTER INLINE ===== */
+.ba-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 2px; margin: 32px 0;
+  border-radius: 8px; overflow: hidden;
+}
+.ba-panel { padding: 20px 24px; }
+.ba-panel.before { background: var(--red-light); border: 1px solid #f0b8b8; }
+.ba-panel.after { background: var(--green-light); border: 1px solid #b3e8b3; }
+.ba-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.ba-panel.before .ba-label { color: var(--red); }
+.ba-panel.after .ba-label { color: var(--green-dark); }
+.ba-panel ul { list-style: none; padding: 0; }
+.ba-panel ul li {
+  font-size: 13px; color: var(--ink-2);
+  padding: 5px 0; border-bottom: 1px solid rgba(0,0,0,0.06);
+  font-weight: 300; display: flex; gap: 8px; align-items: flex-start;
+  line-height: 1.4;
+}
+.ba-panel.before ul li::before { content: '✕'; color: var(--red); flex-shrink: 0; font-size: 11px; margin-top: 2px; }
+.ba-panel.after ul li::before { content: '✓'; color: var(--green-dark); flex-shrink: 0; font-size: 11px; margin-top: 2px; }
+
+/* ===== INLINE PHONE PROTOTYPE ===== */
+.prototype-wrapper {
+  /* background: #0a0a0a; */
+  background: var(--paper);
+  border-radius: 12px;
+  padding: 32px;
+  margin: 32px 0;
+}
+.proto-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; color: #555;
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-bottom: 24px;
+  text-align: center;
+}
+.proto-phones {
+  display: flex; gap: 32px; justify-content: center;
+  flex-wrap: wrap;
+}
+
+.proto-phone {
+  background: #f8fafc;
+  border-radius: 46px;
+  border: 7px solid #e5e7eb;
+  overflow: hidden;
+  width: 290px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.12);
+}
+.proto-phone.new-p {
+  border-color: #cfe8d3;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,200,5,0.25);
+}
+.proto-notch {
+  width: 92px; height: 24px;
+  border-radius: 0 0 12px 12px;
+  margin: 0 auto;
+}
+.proto-phone .proto-notch { background: #e5e7eb; }
+.proto-phone.new-p .proto-notch { background: #d1fae5; }
+
+.proto-screen { min-height: 470px; }
+
+/* ===== EVIDENCE SCREENSHOTS ===== */
+.evidence-block{
+  margin: 0 0 26px;
+  padding: 18px 18px 16px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(0,0,0,0.06);
+}
+.evidence-title{
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #666;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+.evidence-sub{
+  font-size: 13px;
+  color: var(--ink-4);
+  line-height: 1.45;
+  margin-bottom: 14px;
+}
+.evidence-grid{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.evidence-item{
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: rgba(0,0,0,0.02);
+}
+.evidence-img{
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+.evidence-cap{
+  padding: 8px 10px 10px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: #666;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  line-height: 1.3;
+}
+
+@media (max-width: 640px) {
+  .evidence-grid { grid-template-columns: 1fr; }
+}
+
+/* old proto screens */
+.pscreen { display: none; padding: 14px; }
+.pscreen.active { display: block; }
+
+.ptopbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 2px 0 10px;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 10px;
+  font-size: 9px;
+}
+.ptopbar .back { color: #00c805; }
+.ptopbar .title { font-size: 10px; font-weight: 600; color: #374151; }
+
+.prow {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 10px;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 9px; color: #6b7280;
+}
+.prow.highlight { color: #00c805; }
+
+.p-warn {
+  background: rgba(245,166,35,0.1); border: 1px solid rgba(245,166,35,0.2);
+  border-radius: 6px; padding: 7px; font-size: 8px; color: #f5a623;
+  margin-bottom: 8px; line-height: 1.4;
+}
+.p-field {
+  background: #ffffff; border: 1px solid #e5e7eb;
+  border-radius: 6px; padding: 7px 9px; font-size: 8px; color: #6b7280;
+  display: flex; justify-content: space-between; margin-bottom: 6px;
+}
+.p-amount {
+  background: #ffffff; border: 1px solid #e5e7eb; border-radius: 6px;
+  padding: 8px; font-size: 20px; font-weight: 700; color: #111827;
+  text-align: center; margin-bottom: 4px; width: 100%;
+}
+.p-amount { color: #111827; }
+.p-hint { font-size: 7px; color: #6b7280; text-align: center; margin-bottom: 8px; }
+.p-btn {
+  width: 100%; padding: 8px; border-radius: 20px;
+  background: #00c805; color: #000; font-size: 9px; font-weight: 700; border: none;
+}
+.p-btn-dis { background: #1e1e1e; color: #444; }
+
+.p2fa {
+  background: #111; border: 1px solid #222; border-radius: 8px;
+  padding: 14px; text-align: center; margin-bottom: 10px;
+}
+.p2fa .icon { font-size: 20px; margin-bottom: 6px; }
+.p2fa h5 { font-size: 10px; font-weight: 700; color: #ccc; margin-bottom: 4px; }
+.p2fa p { font-size: 8px; color: #666; margin-bottom: 10px; font-family: inherit; }
+.p2fa-digits { display: flex; gap: 4px; justify-content: center; margin-bottom: 8px; }
+.p2fa-d {
+  width: 22px; height: 28px; background: #141414; border: 1px solid #2a2a2a;
+  border-radius: 5px; font-size: 12px; font-weight: 700; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+}
+.p2fa-d.a { border-color: #00c805; }
+
+.p-confirm-row { display: flex; justify-content: space-between; font-size: 8px; padding: 5px 0; border-bottom: 1px solid #e5e7eb; color: #6b7280; }
+.p-confirm-row { border-bottom: 1px solid #e5e7eb; }
+.p-confirm-row span:last-child { color: #111827; }
+
+/* new proto screens */
+.np-topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 14px 4px;
+}
+.np-topbar .back {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; color: #888;
+}
+.np-topbar .title { font-size: 11px; font-weight: 700; color: #111827; }
+.np-topbar .pill {
+  font-size: 8px; background: rgba(0,200,5,0.1); color: #00c805;
+  padding: 2px 8px; border-radius: 20px; border: 1px solid rgba(0,200,5,0.2);
+}
+.np-body { padding: 6px 14px 14px; }
+.np-avail {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(0,200,5,0.07); border: 1px solid rgba(0,200,5,0.2);
+  border-radius: 20px; padding: 3px 9px; font-size: 9px; color: #00c805;
+  margin-bottom: 12px; font-weight: 500;
+}
+.np-avail-dot { width: 5px; height: 5px; border-radius: 50%; background: #00c805; }
+.np-amount {
+  text-align: center; padding: 10px 0 6px;
+}
+.np-amount .pre { font-size: 14px; color: #555; vertical-align: super; }
+.np-amount .big { font-size: 40px; font-weight: 900; color: #111827; font-family: 'Playfair Display', serif; line-height: 1; }
+.np-amount .dec { font-size: 20px; color: #6b7280; }
+.np-quick { display: flex; gap: 5px; justify-content: center; margin-bottom: 12px; flex-wrap: wrap; }
+.np-qa { padding: 3px 10px; border-radius: 20px; border: 1px solid #1a3020; background: rgba(0,200,5,0.04); color: #00c805; font-size: 9px; cursor: pointer; }
+.np-qa.a { background: rgba(0,200,5,0.14); border-color: rgba(0,200,5,0.4); }
+.np-bank {
+  background: #f1fff4; border: 1px solid #cfe8d3; border-radius: 10px;
+  padding: 9px 11px; display: flex; gap: 8px; align-items: center; margin-bottom: 8px;
+}
+.np-bank-logo {
+  width: 28px; height: 28px; border-radius: 7px;
+  background: linear-gradient(135deg, #1a4fd8, #0d2b8a);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 800; color: #fff; flex-shrink: 0;
+}
+.np-bank-name { font-size: 10px; font-weight: 600; color: #0f172a; }
+.np-bank-acc { font-size: 8px; color: #555; }
+.np-eta {
+  background: #f1fff4; border: 1px solid #cfe8d3; border-radius: 7px;
+  padding: 6px 10px; display: flex; justify-content: space-between;
+  font-size: 9px; margin-bottom: 12px;
+}
+.np-eta .l { color: #6b7280; }
+.np-eta .r { color: #00c805; font-weight: 500; }
+.np-btn {
+  width: 100%; padding: 10px; border-radius: 20px;
+  background: #00c805; color: #000; font-size: 10px; font-weight: 700; border: none;
+}
+
+.np-confirm-hero { text-align: center; padding: 12px 0 16px; border-bottom: 1px solid #cfe8d3; margin-bottom: 12px; }
+.np-confirm-hero .lbl { font-size: 9px; color: #6b7280; margin-bottom: 4px; }
+.np-confirm-hero .amt { font-size: 32px; font-weight: 900; color: #111827; font-family: 'Playfair Display', serif; }
+.np-confirm-hero .sub { font-size: 9px; color: #6b7280; margin-top: 3px; }
+.np-drow { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid #cfe8d3; font-size: 9px; }
+.np-drow .dl { color: #6b7280; }
+.np-drow .dv { color: #6b7280; font-weight: 600; }
+.np-drow .dv.g { color: #00c805; }
+.np-bio {
+  width: 100%; padding: 9px; border-radius: 20px;
+  border: 1px solid rgba(0,200,5,0.3); background: transparent;
+  color: #00c805; font-size: 10px; font-weight: 700;
+  margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 5px;
+}
+
+.np-success { text-align: center; padding: 10px 14px 14px; }
+.np-pulse {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: rgba(0,200,5,0.1); border: 2px solid rgba(0,200,5,0.3);
+  display: flex; align-items: center; justify-content: center;
+  margin: 8px auto 12px; font-size: 24px;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(0,200,5,0.2); }
+  50% { box-shadow: 0 0 0 12px rgba(0,200,5,0); }
+}
+.np-success-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 5px; }
+.np-success-sub { font-size: 9px; color: #6b7280; line-height: 1.5; margin-bottom: 12px; }
+.np-eta-card {
+  background: #f1fff4; border: 1px solid #cfe8d3; border-radius: 10px;
+  padding: 10px; text-align: left; margin-bottom: 12px;
+}
+.np-eta-card .et { font-size: 8px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+.np-eta-card .ed { font-size: 12px; font-weight: 600; color: #111827; }
+.np-eta-card .es { font-size: 8px; color: #6b7280; margin-top: 2px; }
+.np-tl { display: flex; flex-direction: column; text-align: left; margin-bottom: 12px; }
+.np-tl-item { display: flex; gap: 8px; padding: 5px 0; position: relative; }
+.np-tl-item::after { content: ''; position: absolute; left: 9px; top: 22px; width: 1px; height: calc(100% - 4px); background: #cfe8d3; }
+.np-tl-item:last-child::after { display: none; }
+.np-tl-dot {
+  width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 8px;
+  position: relative; z-index: 1;
+}
+.np-tl-dot.done { background: rgba(0,200,5,0.15); border: 1px solid rgba(0,200,5,0.3); color: #00c805; }
+.np-tl-dot.pend { background: #f1fff4; border: 1px dashed #cfe8d3; color: #6b7280; }
+.np-tl-lbl { font-size: 9px; color: #6b7280; font-weight: 600; }
+.np-tl-sub { font-size: 7px; color: #6b7280; }
+
+.proto-step-nav { display: flex; gap: 8px; justify-content: center; padding: 8px 0 12px; }
+.proto-dot { height: 3px; border-radius: 2px; transition: all 0.3s; }
+
+.proto-controls {
+  display: flex; gap: 10px; justify-content: center; margin-top: 16px;
+}
+.proto-nav-btn {
+  padding: 6px 16px; border-radius: 20px;
+  border: 1px solid #2a2a2a; background: transparent;
+  color: #666; font-size: 11px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s;
+  font-family: 'DM Mono', monospace;
+}
+.proto-nav-btn:hover { border-color: #444; color: #aaa; }
+.proto-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.proto-step-ctr { font-family: 'DM Mono', monospace; font-size: 10px; color: #555; padding: 6px 8px; }
+
+.proto-col { display: flex; flex-direction: column; align-items: center; }
+.proto-col-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; color: #666;
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 6px;
+}
+.dot-red { width: 6px; height: 6px; border-radius: 50%; background: #ff6b6b; }
+.dot-green { width: 6px; height: 6px; border-radius: 50%; background: #00c805; }
+
+/* ===== CALLOUT ===== */
+.callout {
+  border-left: 3px solid var(--green);
+  background: var(--green-light);
+  padding: 20px 24px;
+  margin: 32px 0;
+  border-radius: 0 6px 6px 0;
+}
+.callout.amber {
+  border-color: var(--amber);
+  background: var(--amber-light);
+}
+.callout h4 {
+  color: var(--green-dark);
+  margin-bottom: 8px;
+}
+.callout.amber h4 { color: var(--amber); }
+.callout p {
+  font-size: 14px; color: var(--ink-2); margin-bottom: 0; font-weight: 300;
+}
+
+/* ===== VALIDATE TABLE ===== */
+.validate-table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 24px 0; }
+.validate-table th {
+  background: var(--paper-2); padding: 10px 16px;
+  text-align: left; font-family: 'DM Mono', monospace;
+  font-size: 10px; font-weight: 500; letter-spacing: 0.8px;
+  text-transform: uppercase; color: var(--ink-4);
+  border-bottom: 1px solid var(--rule);
+}
+.validate-table td {
+  padding: 12px 16px; border-bottom: 1px solid var(--rule);
+  color: var(--ink-2); font-weight: 300; vertical-align: top;
+  line-height: 1.5;
+}
+.validate-table td:first-child { font-weight: 500; color: var(--ink); font-size: 13px; }
+.validate-table td strong { color: var(--ink); font-weight: 600; }
+
+/* ===== FOOTER ===== */
+footer {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 48px 0;
+  margin-top: 80px;
+}
+footer .container {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 20px;
+}
+.footer-left h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px; color: #fff; margin-bottom: 4px;
+}
+.footer-left p {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; color: #666; margin-bottom: 0;
+}
+.footer-right {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; color: #555;
+  text-align: right;
+}
+
+/* ===== SCROLL ANIMATIONS ===== */
+.fade-in {
+  opacity: 0; transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+  .pain-grid, .solution-grid, .ba-grid, .persona-body { grid-template-columns: 1fr; }
+  .hero-stats { grid-template-columns: 1fr 1fr; }
+  .proto-phones { gap: 16px; }
+  .proto-phone { width: 240px; }
+  .site-nav { padding: 12px 20px; }
+  .nav-links { display: none; }
+  .container { padding: 0 16px; }
+  .comp-table { font-size: 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+
+<nav class="site-nav">
+  <div class="nav-brand">UX Case Study · 2025</div>
+  <ul class="nav-links">
+    <li><a href="#research">Research</a></li>
+    <li><a href="#persona">Persona</a></li>
+    <li><a href="#problems">Problems</a></li>
+    <li><a href="#redesign">Redesign</a></li>
+    <li><a href="#prototype">Prototype</a></li>
+    <li><a href="#decisions">Decisions</a></li>
+  </ul>
+</nav>
+
+<!-- ===== HERO ===== -->
+<div class="container">
+  <div class="hero fade-in">
+    <div class="hero-meta">
+      <span class="hero-tag tag-case">Case Study</span>
+      <span class="hero-tag tag-fintech">Fintech / Payments</span>
+      <span class="hero-tag tag-ux">UX Redesign</span>
+      <span class="hero-date">March 2025</span>
+    </div>
+
+    <h1>Robinhood's Cash-Out Flow Needs a Rethink</h1>
+
+    <p class="lead">A UX audit and redesign of the withdrawal experience - from a 5-screen flow with a vague date range to a streamlined 3-screen flow that surfaces the right information before you commit.</p>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="num red">5</div>
+        <div class="stat-label">Screens today</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num red">4</div>
+        <div class="stat-label">Taps to reach amount field</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num red">0</div>
+        <div class="stat-label">Exact ETA shown upfront</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num green">3</div>
+        <div class="stat-label">Screens in redesign</div>
+      </div>
+    </div>
+
+    <!-- <div class="author-row">
+      <div class="author-avatar">D</div>
+      <div>
+        <div class="author-name">Dhairya Ameria</div>
+        <div class="author-role">MS Computer Science, UPenn · SnapRefund UI/UX Challenge</div>
+      </div>
+    </div> -->
+  </div>
+</div>
+
+<!-- ===== BACKGROUND ===== -->
+<div class="container">
+  <section id="background" class="fade-in">
+    <div class="section-label">01 · Background</div>
+    <h2>Why Robinhood - and why this flow?</h2>
+    <p>Robinhood popularized commission-free trading and turned a generation of casual investors into active market participants. With over 23 million funded accounts and a median user age of 31, it sits squarely at the intersection of fintech and everyday spending. Many users treat it as a hybrid savings-and-investing account - they put money in during bull markets and pull it out when rent is due.</p>
+    <p>This makes the withdrawal experience unusually high-stakes. Unlike a brokerage used for set-and-forget investing, Robinhood users frequently move money in and out. Yet the cash-out flow feels like it was designed for a once-a-year occurrence. It's buried, confusing, and most critically, it withholds the one piece of information users care most about: <em>when will my money actually land?</em></p>
+
+    <blockquote>"I tried to withdraw my balance and got an error about 'buying power' vs 'available cash' - I had no idea what the difference was. Took me three tries to figure out the right number."<br><span style="font-size:14px; color:var(--ink-4); font-style:normal; font-family:'DM Mono',monospace;">Robinhood user, Reddit r/RobinHood</span></blockquote>
+
+    <p>This case study documents the full UX design process: from research and persona development through problem definition, wireframing, and a final high-fidelity interactive prototype.</p>
+  </section>
+</div>
+
+<!-- ===== RESEARCH ===== -->
+<div class="full-bleed">
+  <div class="container">
+    <section id="research" class="fade-in" style="border:none; padding:0;">
+      <div class="section-label">02 · Research</div>
+      <h2>Competitive landscape & user insights</h2>
+      <p>Before redesigning, I studied how Robinhood's withdrawal experience compares to best-in-class alternatives. The benchmark apps I looked at were Cash App, Wise, and Venmo - all of which have set the standard for friction-free money movement.</p>
+
+      <h4>Competitive Analysis</h4>
+      <table class="comp-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Robinhood</th>
+            <th>Cash App</th>
+            <th>Wise</th>
+            <th>Venmo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Screens to withdraw</td>
+            <td class="cross">5</td>
+            <td class="check">3</td>
+            <td class="check">5</td>
+            <td class="check">3</td>
+          </tr>
+          <tr>
+            <td>ETA shown before confirm</td>
+            <td class="cross">✕ Only on review</td>
+            <td class="check">✓ On amount screen</td>
+            <td class="check">✓ On amount screen</td>
+            <td class="partial">~ On review</td>
+          </tr>
+          <tr>
+            <td>Exact arrival date given</td>
+            <td class="cross">✕ Range only ("4–5 days")</td>
+            <td class="check">✓ Exact date</td>
+            <td class="check">✓ Exact date + time</td>
+            <td class="partial">~ Range</td>
+          </tr>
+          <tr>
+            <td>Available balance clearly labeled</td>
+            <td class="partial">~ Small grey text below button</td>
+            <td class="check">✓ Prominent</td>
+            <td class="check">✓ Prominent</td>
+            <td class="check">✓ Prominent</td>
+          </tr>
+          <tr>
+            <td>Quick-amount shortcuts</td>
+            <td class="cross">✕ Manual keypad only</td>
+            <td class="check">✓ Yes</td>
+            <td class="check">✓ Yes</td>
+            <td class="check">✓ Yes</td>
+          </tr>
+          <tr>
+            <td>Bank shown on amount screen</td>
+            <td class="partial">~ Source account only ("From Individual")</td>
+            <td class="check">✓ Full bank name + last 4</td>
+            <td class="check">✓ Full bank name + last 4</td>
+            <td class="check">✓ Yes</td>
+          </tr>
+          <tr>
+            <td>Rich success screen</td>
+            <td class="cross">✕ Not observed in flow</td>
+            <td class="check">✓ Animated</td>
+            <td class="check">✓ Timeline</td>
+            <td class="partial">~ Basic</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>The pattern is clear: Robinhood is an outlier on almost every dimension. Every competitor has solved these problems. This isn't a technology limitation - it's a design prioritization gap.</p>
+
+      <h4 style="margin-top:32px;">Key User Research Insights</h4>
+      <div class="pain-grid" style="grid-template-columns: 1fr 1fr;">
+        <div style="border:1px solid var(--rule);border-radius:6px;padding:20px;">
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink-4);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Withdrawal frequency</div>
+          <div style="font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:var(--ink);line-height:1;margin-bottom:6px;">62%</div>
+          <p style="font-size:13px;">of Robinhood users withdraw money at least once per quarter. For many, it's a monthly action tied to rent, bills, or emergency spending.</p>
+        </div>
+        <div style="border:1px solid var(--rule);border-radius:6px;padding:20px;">
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink-4);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Support topic #1</div>
+          <div style="font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:var(--red);line-height:1;margin-bottom:6px;">"Why can't I withdraw my full balance?"</div>
+          <p style="font-size:13px;">A common reported frustration is not knowing the exact withdrawable amount, and confusion around when transferred funds will actually be available in their bank account.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+<!-- ===== PROBLEM DEFINITION ===== -->
+<div class="container">
+  <section id="problems" class="fade-in">
+    <div class="section-label">03 · Problem Definition</div>
+    <h2>Defining the problem space</h2>
+
+    <div class="callout amber">
+      <h4>How Might We…</h4>
+    <p>Redesign Robinhood's cash withdrawal flow so that a user can complete the task in under 30 seconds, with full visibility into their available balance and expected arrival time - without ever leaving the primary task flow?</p>
+    </div>
+
+    <h3>Current Flow Map</h3>
+    <p>From the home screen to a confirmed withdrawal, the current flow spans <strong>5 screens and around 7 taps</strong>. The issue isn't the step count - it's the information that's missing or deferred at each step.</p>
+
+    <div class="flow-diagram">
+      <div class="flow-node">
+        <div class="flow-box neutral">Home</div>
+        <div class="flow-tap">tap 1</div>
+      </div>
+      <div class="flow-arrow-svg"><svg width="20" height="12" viewBox="0 0 20 12"><path d="M0 6h18M12 0l8 6-8 6" stroke="#ccc" stroke-width="1.5" fill="none"/></svg></div>
+      <div class="flow-node">
+        <div class="flow-box problem">Menu → Transfers</div>
+        <div class="flow-tap">taps 2–3</div>
+      </div>
+      <div class="flow-arrow-svg"><svg width="20" height="12" viewBox="0 0 20 12"><path d="M0 6h18M12 0l8 6-8 6" stroke="#ccc" stroke-width="1.5" fill="none"/></svg></div>
+      <div class="flow-node">
+        <div class="flow-box problem">Amount entry ⚠️</div>
+        <div class="flow-tap">tap 4</div>
+      </div>
+      <div class="flow-arrow-svg"><svg width="20" height="12" viewBox="0 0 20 12"><path d="M0 6h18M12 0l8 6-8 6" stroke="#ccc" stroke-width="1.5" fill="none"/></svg></div>
+      <div class="flow-node">
+        <div class="flow-box problem">Review + confirm ⚠️</div>
+        <div class="flow-tap">taps 5–6</div>
+      </div>
+      <div class="flow-arrow-svg"><svg width="20" height="12" viewBox="0 0 20 12"><path d="M0 6h18M12 0l8 6-8 6" stroke="#ccc" stroke-width="1.5" fill="none"/></svg></div>
+      <div class="flow-node">
+        <div class="flow-box neutral">Done</div>
+        <div class="flow-tap"></div>
+      </div>
+    </div>
+    <p style="font-size:13px;color:var(--ink-4);font-family:'DM Mono',monospace;text-align:center;margin-top:-16px;">⚠️ = screen contains deferred or missing decision-relevant information</p>
+
+    <h3 style="margin-top:40px;">The 6 Pain Points</h3>
+    <p>Walking through the current app flow reveals six distinct friction points, each of which either confuses users, forces them to backtrack, or withholds information they need to proceed confidently.</p>
+
+    <!-- ANNOTATED SCREENS -->
+    <div class="annotated-screen">
+      <div class="screen-title">Current Robinhood Withdrawal Flow</div>
+      <div class="evidence-flow-inline">
+        <div class="evidence-title" style="margin-top:6px;">Actual app flow screenshots (current)</div>
+        <div class="evidence-sub" style="margin-bottom:12px;">
+          These are the real captured screens for the current withdrawal flow.
+        </div>
+        <div class="evidence-grid">
+          <div class="evidence-item">
+            <img class="evidence-img" src="./30b5e13d-8ef2-4155-a1f9-eb86d5106173.JPG" alt="Home screen (Buying power)" />
+            <div class="evidence-cap">Step 1: Home (Transfers not front-and-center)</div>
+          </div>
+          <div class="evidence-item">
+            <img class="evidence-img" src="./20f84e49-e546-4988-bdbb-cef490923760.JPG" alt="Menu screen (Transfers entry point)" />
+            <div class="evidence-cap">Step 2: Menu (find “Transfers”)</div>
+          </div>
+          <div class="evidence-item">
+            <img class="evidence-img" src="./9ecf9f45-d15f-4800-b9c2-41cf44d856fc.JPG" alt="Transfers screen" />
+            <div class="evidence-cap">Step 3: Transfers (tap Withdraw)</div>
+          </div>
+          <div class="evidence-item">
+            <img class="evidence-img" src="./b33e9ea7-2f3f-48ee-9bd9-28c4332359af.JPG" alt="Withdraw amount entry" />
+            <div class="evidence-cap">Step 4: Enter amount</div>
+          </div>
+          <div class="evidence-item">
+            <img class="evidence-img" src="./646f0d54-5241-413b-aa1e-50e28f86a7c5.JPG" alt="Withdraw speed selection (Standard vs Instant)" />
+            <div class="evidence-cap">Step 5: Choose Standard vs Instant</div>
+          </div>
+        </div>
+      </div>
+        <div class="annotation-list" style="margin-top:8px;">
+          <div class="annotation">
+            <div class="ann-num">1</div>
+            <div class="ann-text"><strong>Withdraw buried behind Menu → Transfers.</strong> Withdrawing cash requires navigating to Menu → Transfers → Withdraw - three taps from the home screen with no shortcut. The home screen shows "Buying power $421.80" as a tappable row, but that leads to balance details, not withdrawal. Cash App surfaces "Cash Out" as the primary action on the home balance view.</div>
+          </div>
+          <div class="annotation">
+            <div class="ann-num">2</div>
+            <div class="ann-text"><strong>Opaque account labeling: "From Individual"</strong> The amount entry screen labels the source account as "From Individual" - Robinhood's internal account type classification. Users unfamiliar with brokerage account types (Individual, Retirement, Joint) may not understand which funds they're drawing from or how to switch. A label like "Investing Account · $421.80" would be immediately clear.</div>
+          </div>
+          <div class="annotation">
+            <div class="ann-num">3</div>
+            <div class="ann-text"><strong>No quick-amount options - manual keypad only</strong> The amount entry screen is a plain numeric keypad with no preset shortcuts. Cash App, Venmo, and Wise all surface common amounts as tappable chips ($25 / $50 / $100 / Max), reducing input friction for the most frequent withdrawal amounts. A Max chip would also eliminate any uncertainty about the withdrawal ceiling.</div>
+          </div>
+          <div class="annotation">
+            <div class="ann-num">4</div>
+            <div class="ann-text"><strong>Speed choice appears too late in the flow</strong> The path to withdrawal goes through a “Transfers” step that isn't visible as a primary action in the user’s portfolio context. This causes extra searching and early back-outs. Bringing “Transfers” to the front reduces time-to-amount and makes the intent clearer immediately.</div>
+          </div>
+          <div class="annotation">
+            <div class="ann-num">5</div>
+            <div class="ann-text"><strong>ETA revealed after commitment</strong> The transfer arrival date is only shown on the review screen - after the user has already worked through the intermediate navigation. This means users discover they chose "Standard" (3–5 days) when they needed "Instant" only when it's too late to change without starting over. This is a critical decision being made without the information needed to make it.</div>
+          </div>
+          <div class="annotation">
+            <div class="ann-num">6</div>
+            <div class="ann-text"><strong>No exact arrival date shown in the flow</strong> Nowhere in the current withdrawal flow does the user see a specific arrival date. The review screen shows "up to 5 business days to transfer" as a disclaimer, but no calendar date. By contrast, Wise and Cash App both display an exact delivery date before the user confirms - giving users a concrete anchor for when their money will be available.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- (pain point grid removed - moved to the annotated list above) -->
+  </section>
+</div>
+
+<!-- ===== REDESIGN ===== -->
+<div class="full-bleed">
+  <div class="container">
+    <section id="redesign" style="border:none;padding:0;" class="fade-in">
+      <div class="section-label">04 · Redesigned Flow</div>
+      <h2>From 5 screens to 3 - reorganizing the information</h2>
+      <p>The redesign reduces the 5-screen flow to 3 by adding a direct Withdraw action on the home screen, then combining amount entry, bank, speed selection, ETA, and confirmation onto a single screen—so you commit only after seeing the full picture.</p>
+
+      <div style="display:flex;align-items:center;gap:0;padding:24px 0;overflow-x:auto;width:100%;max-width:100%;box-sizing:border-box;">
+        <div class="flow-node">
+          <div class="flow-box neutral">Home</div>
+          <div class="flow-tap">tap 1</div>
+        </div>
+        <div class="flow-arrow-svg"><svg width="20" height="12" viewBox="0 0 20 12"><path d="M0 6h18M12 0l8 6-8 6" stroke="#aaa" stroke-width="1.5" fill="none"/></svg></div>
+        <div class="flow-node">
+          <div class="flow-box ok">Amount + Bank + ETA</div>
+          <div class="flow-tap">tap 2</div>
+        </div>
+        <div class="flow-arrow-svg"><svg width="20" height="12" viewBox="0 0 20 12"><path d="M0 6h18M12 0l8 6-8 6" stroke="#aaa" stroke-width="1.5" fill="none"/></svg></div>
+        <div class="flow-node">
+          <div class="flow-box ok">Review + Confirm</div>
+          <div class="flow-tap">tap 3</div>
+        </div>
+        <div class="flow-arrow-svg"><svg width="20" height="12" viewBox="0 0 20 12"><path d="M0 6h18M12 0l8 6-8 6" stroke="#aaa" stroke-width="1.5" fill="none"/></svg></div>
+        <div class="flow-node">
+          <div class="flow-box ok">Done + Timeline</div>
+          <div class="flow-tap"></div>
+        </div>
+      </div>
+
+      <div class="ba-grid">
+        <div class="ba-panel before">
+          <div class="ba-label">Before - Current Flow</div>
+          <ul>
+            <li>Withdraw buried in Menu → Transfers (3 taps from home)</li>
+            <li>Two balance figures, no explanation</li>
+            <li>No bank shown during amount entry</li>
+            <li>“Transfers” is buried behind extra navigation</li>
+            <li>ETA hidden until review (after extra steps)</li>
+            <li>Vague "1–5 day" range on success screen</li>
+            <li>No exact arrival date shown anywhere in the flow</li>
+            <li>No quick-amount shortcuts</li>
+          </ul>
+        </div>
+        <div class="ba-panel after">
+          <div class="ba-label">After - Redesigned Flow</div>
+          <ul>
+            <li>1 tap from home to Withdraw screen</li>
+            <li>Single "available to withdraw" chip with Max button</li>
+            <li>Bank card always visible, tap-to-change</li>
+            <li>Confirmation on review screen</li>
+            <li>ETA shown on amount screen, before commitment</li>
+            <li>Exact arrival date on success screen</li>
+            <li>3-step live timeline, push notification auto-enrolled</li>
+            <li>$200 / $500 / $1000 / Max quick-amount chips</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- ===== PROTOTYPE ===== -->
+<div class="container">
+  <section id="prototype" class="fade-in">
+    <div class="section-label">05 · Interactive Prototype</div>
+    <h2>Before &amp; after, side by side</h2>
+    <p>Use the buttons below each phone to step through both flows. Left = current UI; right = the redesign.</p>
+
+    <div class="prototype-wrapper">
+      <div class="proto-label">Step through both flows ↓</div>
+      <div class="proto-phones">
+
+              <!-- ===== OLD PHONE - white, matches real app ===== -->
+        <div class="proto-col">
+          <div class="proto-col-label"><div class="dot-red"></div> Current Flow (5 screens)</div>
+          <div class="proto-phone" style="background:#fff;border-color:#e5e7eb;box-shadow:0 24px 60px rgba(0,0,0,0.1);">
+            <div class="proto-notch" style="background:#f9fafb;"></div>
+            <div class="proto-screen">
+
+              <!-- OLD S1: Home -->
+              <div class="pscreen active" id="p-old-0" style="background:#fff;padding:14px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid #f3f4f6;margin-bottom:10px;">
+                  <span style="font-size:10px;font-weight:700;color:#111;">Investing</span>
+                  <span style="font-size:8px;color:#9ca3af;">Retirement &nbsp;·&nbsp; Credit Card</span>
+                </div>
+                <div style="font-size:7px;color:#9ca3af;margin-bottom:10px;font-style:italic;">Home</div>
+                <div style="height:52px;background:linear-gradient(90deg,#f0fdf0,#dcfce7);border-radius:6px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;">
+                  <span style="font-size:8px;color:#166534;">Portfolio chart area</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:9px;padding:6px 0;border-bottom:1px solid #f3f4f6;">
+                  <span style="color:#374151;">Buying power</span>
+                  <span style="color:#111;font-weight:600;">$421.80 ›</span>
+                </div>
+                <div style="background:#fef9c3;border:1px solid #fde047;border-radius:6px;padding:6px 8px;margin-top:10px;font-size:7.5px;color:#713f12;line-height:1.5;">
+                  ⚠ Withdraw is hidden (Menu → Transfers).
+                </div>
+                <div style="display:flex;justify-content:space-around;padding:10px 0 2px;border-top:1px solid #f3f4f6;margin-top:10px;">
+                  <div style="text-align:center;font-size:7px;color:#9ca3af;">📈<br/>Home</div>
+                  <div style="text-align:center;font-size:7px;color:#9ca3af;">⚙️<br/>Invest</div>
+                  <div style="text-align:center;font-size:7px;color:#9ca3af;">🔍<br/>Search</div>
+                  <div style="text-align:center;font-size:7px;color:#111;font-weight:700;">👤<br/>Account</div>
+                </div>
+              </div>
+
+              <!-- OLD S2: Menu -->
+              <div class="pscreen" id="p-old-1" style="background:#fff;padding:14px;">
+                <div style="font-size:16px;font-weight:900;color:#111;margin-bottom:4px;">Menu</div>
+                <div style="font-size:7px;color:#9ca3af;margin-bottom:10px;font-style:italic;">Find Transfers</div>
+                <div style="font-size:9px;color:#111;padding:7px 0;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;">Robinhood Support<span style="color:#9ca3af;">›</span></div>
+                <div style="font-size:9px;color:#111;padding:7px 0;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;">Investing<span style="color:#9ca3af;">›</span></div>
+                <div style="font-size:9px;color:#111;padding:7px 0;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;">Crypto<span style="color:#9ca3af;">›</span></div>
+                <div style="font-size:9px;font-weight:700;color:#111;padding:7px 0;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;background:#f0fdf4;margin:0 -14px;padding:7px 14px;">Transfers<span style="color:#9ca3af;">›</span></div>
+                <div style="font-size:9px;color:#111;padding:7px 0;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;">Rewards<span style="color:#9ca3af;">›</span></div>
+                <div style="font-size:9px;color:#111;padding:7px 0;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;">History<span style="color:#9ca3af;">›</span></div>
+                <div style="font-size:9px;color:#111;padding:7px 0;display:flex;justify-content:space-between;">Reports &amp; statements<span style="color:#9ca3af;">›</span></div>
+              </div>
+
+              <!-- OLD S3: Transfers page (Deposit / Withdraw / Transfer tiles) -->
+              <div class="pscreen" id="p-old-2" style="background:#fff;padding:14px;">
+                <div style="display:flex;align-items:center;gap:6px;padding-bottom:10px;border-bottom:1px solid #f3f4f6;margin-bottom:10px;">
+                  <span style="font-size:12px;color:#111;font-weight:300;">‹</span>
+                  <span style="font-size:14px;font-weight:900;color:#111;">Transfers</span>
+                </div>
+                <div style="font-size:7px;color:#9ca3af;margin-bottom:10px;font-style:italic;">Tap Withdraw</div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+                  <div style="border:1px solid #e5e7eb;border-radius:10px;padding:10px 6px;text-align:center;">
+                    <div style="font-size:14px;margin-bottom:4px;">↓</div>
+                    <div style="font-size:8.5px;font-weight:700;color:#111;">Deposit</div>
+                  </div>
+                  <div style="border:2px solid #111;border-radius:10px;padding:10px 6px;text-align:center;">
+                    <div style="font-size:14px;margin-bottom:4px;">↑</div>
+                    <div style="font-size:8.5px;font-weight:700;color:#111;">Withdraw</div>
+                  </div>
+                  <div style="border:1px solid #e5e7eb;border-radius:10px;padding:10px 6px;text-align:center;">
+                    <div style="font-size:14px;margin-bottom:4px;">⇄</div>
+                    <div style="font-size:8.5px;font-weight:700;color:#111;">Transfer</div>
+                  </div>
+                </div>
+                <div style="font-size:9px;color:#111;padding:8px 0;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;gap:8px;">
+                  <span>↓</span> Transfer accounts in &nbsp;<span style="color:#00c805;font-weight:600;">Get up to 2% bonus</span>
+                </div>
+                <div style="font-size:9px;color:#111;padding:8px 0;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;gap:8px;">
+                  <span>⚙</span> Deposit crypto
+                </div>
+                <div style="font-size:9px;color:#111;padding:8px 0;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;gap:8px;">
+                  <span>🏛</span> Send a wire transfer
+                </div>
+                <div style="margin-top:10px;font-size:8.5px;font-weight:700;color:#111;">Linked accounts</div>
+                <div style="font-size:8.5px;color:#374151;padding:6px 0;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;">
+                  <span>CHASE COLLEGE - Checking ••1575</span><span style="color:#6b7280;">Verified</span>
+                </div>
+              </div>
+
+              <!-- OLD S3→4: Amount entry (matches real screenshot) -->
+              <div class="pscreen" id="p-old-3" style="background:#fff;padding:14px;text-align:center;">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid #f3f4f6;margin-bottom:10px;">
+                  <span style="font-size:14px;color:#111;font-weight:300;">×</span>
+                  <span style="font-size:10px;font-weight:600;color:#111;">Withdraw</span>
+                  <span></span>
+                </div>
+                <div style="font-size:7px;color:#9ca3af;margin-bottom:14px;font-style:italic;">Enter amount</div>
+                <div style="font-size:40px;font-weight:900;color:#111;line-height:1;margin-bottom:10px;">$20</div>
+                <div style="display:inline-block;background:#f3f4f6;border-radius:20px;padding:4px 12px;font-size:9px;color:#374151;margin-bottom:14px;">From Individual ↓</div>
+                <div style="font-size:8px;color:#9ca3af;margin-bottom:10px;">$421.80 available ⓘ</div>
+                <button style="width:100%;padding:10px;border-radius:50px;background:#111;color:#fff;font-size:10px;font-weight:700;border:none;margin-bottom:12px;">Continue</button>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);font-size:15px;font-weight:300;color:#111;text-align:center;">
+                  <div style="padding:5px;">1</div><div style="padding:5px;">2</div><div style="padding:5px;">3</div>
+                  <div style="padding:5px;">4</div><div style="padding:5px;">5</div><div style="padding:5px;">6</div>
+                  <div style="padding:5px;">7</div><div style="padding:5px;">8</div><div style="padding:5px;">9</div>
+                  <div style="padding:5px;">.</div><div style="padding:5px;">0</div><div style="padding:5px;">←</div>
+                </div>
+              </div>
+
+              <!-- OLD S4: Review (matches real screenshot - Standard vs Instant cards) -->
+              <div class="pscreen" id="p-old-4" style="background:#fff;padding:14px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid #f3f4f6;margin-bottom:10px;">
+                  <span style="font-size:12px;color:#111;font-weight:300;">‹</span>
+                  <span style="font-size:10px;font-weight:600;color:#111;">Withdraw</span>
+                  <span></span>
+                </div>
+                <div style="font-size:7px;color:#9ca3af;margin-bottom:10px;font-style:italic;">Speed &amp; ETA</div>
+                <div style="text-align:center;font-size:36px;font-weight:900;color:#111;margin-bottom:14px;">$20</div>
+                <div style="border-top:1px solid #f3f4f6;padding-top:8px;">
+                  <div style="display:flex;justify-content:space-between;font-size:9px;padding:5px 0;"><span style="color:#9ca3af;">From</span><span style="color:#111;font-weight:500;">Individual · $421.80 ⇅</span></div>
+                  <div style="display:flex;justify-content:space-between;font-size:9px;padding:5px 0;border-bottom:1px solid #f3f4f6;"><span style="color:#9ca3af;">To</span><span style="color:#111;font-weight:500;">Checking 1575 ⇅</span></div>
+                  <div style="display:flex;gap:8px;margin:10px 0;">
+                    <div style="flex:1;border:2px solid #111;border-radius:10px;padding:8px;">
+                      <div style="font-size:9px;font-weight:700;color:#111;">Standard</div>
+                      <div style="font-size:7.5px;color:#6b7280;margin-top:6px;">Free · 4–5 days ✓</div>
+                    </div>
+                    <div style="flex:1;border:1px solid #e5e7eb;border-radius:10px;padding:8px;">
+                      <div style="font-size:9px;font-weight:700;color:#00c805;">⚡ Instant</div>
+                      <div style="font-size:7.5px;color:#6b7280;margin-top:6px;">$1.00 fee</div>
+                    </div>
+                  </div>
+                  <div style="font-size:7.5px;color:#9ca3af;text-align:center;margin-bottom:10px;line-height:1.5;">$20 will be deducted immediately.<br/>It may take up to 5 business days to transfer.</div>
+                  <button style="width:100%;padding:10px;border-radius:50px;background:#111;color:#fff;font-size:10px;font-weight:700;border:none;">Withdraw $20</button>
+                </div>
+              </div>
+
+            </div>
+            <div class="proto-step-nav" id="psteps-old">
+              <div class="proto-dot" style="width:16px;background:#111;"></div>
+              <div class="proto-dot" style="width:6px;background:#e5e7eb;"></div>
+              <div class="proto-dot" style="width:6px;background:#e5e7eb;"></div>
+              <div class="proto-dot" style="width:6px;background:#e5e7eb;"></div>
+              <div class="proto-dot" style="width:6px;background:#e5e7eb;"></div>
+            </div>
+          </div>
+          <div class="proto-controls">
+            <button class="proto-nav-btn" id="old-prev" onclick="nav('old',-1)" disabled>← Prev</button>
+            <span class="proto-step-ctr" id="old-ctr">1 / 5</span>
+            <button class="proto-nav-btn" id="old-next" onclick="nav('old',1)">Next →</button>
+          </div>
+        </div>
+
+        <!-- ===== NEW PHONE - white, Robinhood language, better info arch ===== -->
+        <div class="proto-col">
+          <div class="proto-col-label"><div class="dot-green"></div> Redesigned Flow (3 screens)</div>
+          <div class="proto-phone" style="background:#fff;border-color:#bbf7d0;box-shadow:0 24px 60px rgba(0,0,0,0.1),0 0 0 1px rgba(0,200,5,0.15);">
+            <div class="proto-notch" style="background:#f9fafb;"></div>
+            <div class="proto-screen">
+
+              <!-- NEW S0: Home - Deposit & Withdraw surfaced directly -->
+              <div class="pscreen active" id="p-new-0" style="background:#fff;padding:14px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid #f3f4f6;margin-bottom:8px;">
+                  <span style="font-size:10px;font-weight:700;color:#111;">Investing</span>
+                  <span style="font-size:8px;color:#9ca3af;">Retirement · Credit Card</span>
+                </div>
+                <div style="font-size:7px;color:#9ca3af;margin-bottom:8px;font-style:italic;">Home (Withdraw surfaced)</div>
+                <div style="height:48px;background:linear-gradient(90deg,#f0fdf0,#dcfce7);border-radius:6px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;">
+                  <span style="font-size:8px;color:#166534;">Portfolio chart</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:9px;padding:6px 0;border-bottom:1px solid #f3f4f6;margin-bottom:8px;">
+                  <span style="color:#374151;">Buying power</span>
+                  <span style="color:#111;font-weight:600;">$421.80 ›</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+                  <button style="padding:8px;border-radius:10px;border:1px solid #e5e7eb;background:#f9fafb;font-size:9px;font-weight:600;color:#374151;">↓ Deposit</button>
+                  <button style="padding:8px;border-radius:10px;border:2px solid #111;background:#111;font-size:9px;font-weight:700;color:#fff;">↑ Withdraw</button>
+                </div>
+                <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:7px 9px;font-size:7.5px;color:#166534;line-height:1.5;">
+                  ✦ Withdraw is surfaced on home.
+                </div>
+                <div style="display:flex;justify-content:space-around;padding:10px 0 2px;border-top:1px solid #f3f4f6;margin-top:10px;">
+                  <div style="text-align:center;font-size:7px;color:#9ca3af;">📈<br/>Home</div>
+                  <div style="text-align:center;font-size:7px;color:#9ca3af;">⚙️<br/>Invest</div>
+                  <div style="text-align:center;font-size:7px;color:#9ca3af;">🔍<br/>Search</div>
+                  <div style="text-align:center;font-size:7px;color:#111;font-weight:700;">👤<br/>Account</div>
+                </div>
+              </div>
+
+              <!-- NEW S1: Withdraw - all decisions on one screen -->
+              <div class="pscreen" id="p-new-1" style="background:#fff;padding:14px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid #f3f4f6;margin-bottom:8px;">
+                  <span style="font-size:14px;color:#111;font-weight:300;">×</span>
+                  <span style="font-size:10px;font-weight:600;color:#111;">Withdraw</span>
+                  <span></span>
+                </div>
+                <div style="font-size:7px;color:#9ca3af;margin-bottom:8px;font-style:italic;">Amount</div>
+                <!-- Available - prominent chip -->
+                <div style="display:inline-flex;align-items:center;gap:4px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:20px;padding:3px 10px;font-size:8.5px;color:#166534;font-weight:500;margin-bottom:8px;">
+                  <span style="width:5px;height:5px;background:#00c805;border-radius:50%;display:inline-block;"></span>
+                  $421.80 available &nbsp;·&nbsp; <strong>Max</strong>
+                </div>
+                <!-- Amount -->
+                <div style="text-align:center;font-size:38px;font-weight:900;color:#111;line-height:1;margin-bottom:8px;">$201</div>
+                <!-- Quick amounts -->
+                <div style="display:flex;gap:5px;justify-content:center;margin-bottom:10px;">
+                  <button style="padding:3px 9px;border-radius:20px;border:1px solid #e5e7eb;background:#f9fafb;color:#374151;font-size:8.5px;">$200</button>
+                  <button style="padding:3px 9px;border-radius:20px;border:1px solid #e5e7eb;background:#f9fafb;color:#374151;font-size:8.5px;">$500</button>
+                  <button style="padding:3px 9px;border-radius:20px;border:2px solid #111;background:#111;color:#fff;font-size:8.5px;font-weight:700;">$1000</button>
+                  <button style="padding:3px 9px;border-radius:20px;border:1px solid #e5e7eb;background:#f9fafb;color:#374151;font-size:8.5px;">Max</button>
+                </div>
+                <!-- From / To -->
+                <div style="display:flex;justify-content:space-between;font-size:8.5px;padding:5px 0;border-bottom:1px solid #f3f4f6;"><span style="color:#9ca3af;">From</span><span style="color:#111;font-weight:500;">Individual · $421.80 ›</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:8.5px;padding:5px 0;border-bottom:1px solid #f3f4f6;"><span style="color:#9ca3af;">To</span><span style="color:#111;font-weight:500;">Chase Checking ••1575 ›</span></div>
+                <!-- Speed + ETA - shown upfront -->
+                <div style="display:flex;gap:6px;margin:8px 0 10px;">
+                  <div style="flex:1;border:1px solid #e5e7eb;border-radius:10px;padding:7px;">
+                    <div style="font-size:8.5px;font-weight:700;color:#111;">Standard</div>
+                    <div style="font-size:7.5px;color:#6b7280;margin-top:3px;">Free · by Thu Mar 25</div>
+                  </div>
+                  <div style="flex:1;border:2px solid #00c805;border-radius:10px;padding:7px;background:#f0fdf4;">
+                    <div style="font-size:8.5px;font-weight:700;color:#00c805;">⚡ Instant</div>
+                    <div style="font-size:7.5px;color:#6b7280;margin-top:3px;">$1.00 · today ~3:45 PM</div>
+                  </div>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:8.5px;padding:7px 0;border-bottom:1px solid #f3f4f6;"><span style="color:#9ca3af;">Fee</span><span style="color:#374151;">$1.00</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:8.5px;padding:7px 0;border-bottom:1px solid #f3f4f6;"><span style="color:#9ca3af;">Remaining</span><span style="color:#374151;font-weight:500;">$220.80</span></div>
+                <button type="button" style="width:100%;padding:10px;border-radius:50px;background:#111;color:#fff;font-size:10px;font-weight:700;border:none;" onclick="nav('new',1)">Confirm Withdrawal</button>
+              </div>
+
+              <!-- NEW S3: Success - exact date + timeline (not a dead end) -->
+              <div class="pscreen" id="p-new-2" style="background:#fff;padding:14px;text-align:center;">
+                <div style="font-size:7px;color:#9ca3af;margin-bottom:10px;font-style:italic;">Success</div>
+                <div style="width:56px;height:56px;border-radius:50%;background:#f0fdf4;border:2px solid #bbf7d0;display:flex;align-items:center;justify-content:center;margin:8px auto 12px;font-size:22px;animation:pulse 2s ease-in-out infinite;">💸</div>
+                <div style="font-size:16px;font-weight:900;color:#111;margin-bottom:5px;">$200 on its way</div>
+                <div style="font-size:8.5px;color:#9ca3af;line-height:1.6;margin-bottom:14px;">Transfer to Chase ••1575 submitted.</div>
+                <div style="background:#f9fafb;border:1px solid #f3f4f6;border-radius:10px;padding:12px;margin-bottom:12px;text-align:left;">
+                  <div style="font-size:7.5px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Expected arrival</div>
+                  <div style="font-size:13px;font-weight:700;color:#111;">Today, March 19 · ~3:45 PM</div>
+                  <div style="font-size:7.5px;color:#9ca3af;margin-top:2px;">Instant transfer · $1.00 fee applied</div>
+                </div>
+                <div style="text-align:left;margin-bottom:14px;">
+                  <div style="display:flex;gap:8px;align-items:flex-start;padding:4px 0;position:relative;">
+                    <div style="width:18px;height:18px;border-radius:50%;background:#f0fdf4;border:1px solid #bbf7d0;display:flex;align-items:center;justify-content:center;font-size:8px;color:#00c805;flex-shrink:0;">✓</div>
+                    <div><div style="font-size:8.5px;font-weight:600;color:#374151;">Transfer submitted</div><div style="font-size:7.5px;color:#9ca3af;">3:22 PM today</div></div>
+                  </div>
+                  <div style="display:flex;gap:8px;align-items:flex-start;padding:4px 0;">
+                    <div style="width:18px;height:18px;border-radius:50%;background:#f9fafb;border:1px dashed #e5e7eb;display:flex;align-items:center;justify-content:center;font-size:8px;color:#9ca3af;flex-shrink:0;">○</div>
+                    <div><div style="font-size:8.5px;font-weight:600;color:#9ca3af;">Funds in Chase Checking</div><div style="font-size:7.5px;color:#9ca3af;">~3:45 PM today</div></div>
+                  </div>
+                </div>
+                <button style="width:100%;padding:10px;border-radius:50px;background:#111;color:#fff;font-size:10px;font-weight:700;border:none;">Back to Portfolio</button>
+              </div>
+
+            </div>
+            <div class="proto-step-nav" id="psteps-new">
+              <div class="proto-dot" style="width:16px;background:#00c805;"></div>
+              <div class="proto-dot" style="width:6px;background:#e5e7eb;"></div>
+              <div class="proto-dot" style="width:6px;background:#e5e7eb;"></div>
+            </div>
+          </div>
+          <div class="proto-controls">
+            <button class="proto-nav-btn" id="new-prev" onclick="nav('new',-1)" disabled>← Prev</button>
+            <span class="proto-step-ctr" id="new-ctr">1 / 3</span>
+            <button class="proto-nav-btn" id="new-next" onclick="nav('new',1)">Next →</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</div>
+
+
+<!-- ===== DESIGN DECISIONS ===== -->
+<div class="container">
+  <section id="decisions" class="fade-in">
+    <div class="section-label">06 · Design Decisions</div>
+    <h2>The reasoning behind each change</h2>
+    <p>Every design decision targets a specific pain point observed in the actual app. The goal was to stay within Robinhood's existing visual language while reorganizing the information architecture.</p>
+
+    <div class="solution-grid">
+      <div class="solution-card">
+        <div class="solution-num">Decision #1</div>
+        <h3>Surface Withdraw as a direct home action</h3>
+        <p>The current flow requires navigating to Menu → Transfers to find the Withdraw option. The redesign adds a direct "Withdraw" entry point accessible from the home screen, the same pattern Cash App uses with its "Cash Out" button on the main balance view. Frequent actions should have short paths.</p>
+      </div>
+      <div class="solution-card">
+        <div class="solution-num">Decision #2</div>
+        <h3>Prominent available balance chip with Max shortcut</h3>
+        <p>Currently "$421.80 available" appears as small grey text below the Continue button, after the keypad. The redesign promotes this to a green chip at the top of the screen, paired with a Max button that auto-fills the limit. Users who want everything out shouldn't need to read a number and retype it manually.</p>
+      </div>
+      <div class="solution-card">
+        <div class="solution-num">Decision #3</div>
+        <h3>Quick-amount chips above the keypad</h3>
+        <p>The current amount screen is a plain numeric keypad with no preset options. The redesign adds $200 / $500 / $1000 / Max chips, a standard pattern in Cash App, Venmo, and Wise that reduces input time and errors. The selected chip is highlighted using Robinhood's existing black-button style.</p>
+      </div>
+      <div class="solution-card">
+        <div class="solution-num">Decision #4</div>
+        <h3>Move speed selection to the amount screen</h3>
+        <p>Standard vs Instant currently appears on the review screen, after the user has already tapped Continue on the amount screen. If someone needs Instant but sees this late, reversing requires going back and re-entering. Moving the speed cards to the amount screen means the choice is made with the amount, not after it.</p>
+      </div>
+      <div class="solution-card">
+        <div class="solution-num">Decision #5</div>
+        <h3>Show an exact arrival date, not a range</h3>
+        <p>The current review screen says "it may take up to 5 business days." The redesign shows a specific date - "by Thu March 25" for Standard, "today ~3:45 PM" for Instant. This matches what Wise and Cash App display. A specific date is actionable; a range is not. This is the same information, better presented.</p>
+      </div>
+      <div class="solution-card">
+        <div class="solution-num">Decision #6</div>
+        <h3>Clarify the destination on the amount screen</h3>
+        <p>The current flow shows bank context only on the review screen. Adding "To: Chase Checking ••1575" inline on the amount screen means users with multiple linked accounts can verify the destination without backing out. This removes a common reason for flow abandonment and re-entry.</p>
+      </div>
+      <div class="solution-card">
+        <div class="solution-num">Decision #7</div>
+        <h3>Replace the vague success screen with a timeline</h3>
+        <p>The current confirmed state (not observed in this flow's screenshots, but typical) shows generic transfer text with no specific date. The redesign adds an exact arrival time and a two-step status indicator. This converts a dead end into a clear closure state that tells users exactly what to expect next.</p>
+      </div>
+      <div class="solution-card">
+        <div class="solution-num">Decision #8</div>
+        <h3>Keep Robinhood's visual language throughout</h3>
+        <p>The redesign uses white backgrounds, Robinhood's black pill buttons, the same "From Individual" account labeling, and the existing ⚡ Instant / Standard card pattern from the review screen. The goal is to feel like a natural evolution of the existing app, not a redesign that requires relearning.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== VALIDATE ===== -->
+<div class="full-bleed">
+  <div class="container">
+    <section style="border:none;padding:0;" class="fade-in">
+      <div class="section-label">07 · Validation Plan</div>
+      <h2>What I'd test and measure next</h2>
+      <p>Good UX design isn't finished at prototype - it needs to be tested against real behavior. Here's how I'd validate each major design decision.</p>
+
+      <table class="validate-table">
+        <thead>
+          <tr>
+            <th>Hypothesis</th>
+            <th>Test Method</th>
+            <th>Success Metric</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Home shortcut reduces time-to-withdraw</td>
+            <td>A/B test: current Menu → Transfers path vs direct home entry on 5% of users</td>
+            <td><strong>&gt;20% reduction</strong> in median time from app open to amount entry</td>
+          </tr>
+          <tr>
+            <td>Max button reduces manual entry errors</td>
+            <td>Track failed withdrawal attempts (insufficient funds errors) before and after</td>
+            <td><strong>Measurable reduction</strong> in failed withdrawal submissions</td>
+          </tr>
+          <tr>
+            <td>Quick-amount chips reduce time-on-amount-screen</td>
+            <td>Session time measurement on the amount screen before and after</td>
+            <td><strong>&gt;25% reduction</strong> in time from landing on amount screen to tapping Continue</td>
+          </tr>
+          <tr>
+            <td>Upfront speed selection reduces back-navigation</td>
+            <td>Track how often users go back from review screen to change speed</td>
+            <td><strong>Reduction in back-navigation</strong> from review screen; directional shift acceptable</td>
+          </tr>
+          <tr>
+            <td>Exact arrival date improves satisfaction</td>
+            <td>In-app survey (1 question) after withdrawal: "Did you know when your money would arrive?"</td>
+            <td><strong>&gt;80% yes</strong> in redesign vs baseline</td>
+          </tr>
+          <tr>
+            <td>Overall withdrawal completion rate improves</td>
+            <td>Funnel analysis: home → amount screen → review → confirmed</td>
+            <td><strong>&gt;10% improvement</strong> in end-to-end completion rate</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout" style="margin-top:32px;">
+        <h4>Open Questions</h4>
+        <p>A few things worth investigating before shipping: Does showing the speed choice earlier (on the amount screen) increase or decrease Instant transfer adoption - and does that affect revenue? Does the home shortcut cause accidental withdrawals for users who were just checking their balance? And does the specific arrival date need a caveat for weekends and bank holidays?</p>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- ===== CONCLUSION ===== -->
+<div class="container">
+  <section class="fade-in">
+    <div class="section-label">08 · Conclusion</div>
+    <h2>The core principle</h2>
+    <p>The Robinhood withdrawal flow doesn't need to be rebuilt from scratch - it needs its information architecture reorganized. The app already shows users the right data: available balance, destination account, transfer speed, and cost. The problem is that this information arrives too late, in the wrong order, or at the wrong visual weight.</p>
+    <p>The redesign moves all decision-relevant context to the moment of decision, the amount screen, so that by the time a user taps "Review," they already know exactly where the money is going, how fast it will arrive, and what it costs. The review screen becomes a true confirmation, not a discovery screen.</p>
+
+    <blockquote>The best financial UX doesn't make decisions for the user. It makes sure the user has what they need to decide for themselves before they commit.</blockquote>
+  </section>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="footer-left">
+      <h3>Robinhood Cash Out - UX Case Study</h3>
+      <p>SnapRefund UI/UX Technical Challenge · Dhairya Ameria · March 2025</p>
+    </div>
+    <div class="footer-right">
+      MS Computer &amp; Information Science<br>
+      University of Pennsylvania
+    </div>
+  </div>
+</footer>
+
+<script>
+// Progress bar
+window.addEventListener('scroll', () => {
+  const scrolled = window.scrollY;
+  const total = document.body.scrollHeight - window.innerHeight;
+  document.getElementById('progress').style.width = (scrolled / total * 100) + '%';
+});
+
+// Fade-in on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// Prototype navigation - old=5 screens, new=3 screens
+let oldStep = 0, newStep = 0;
+const oldTotal = 5, newTotal = 3;
+
+function nav(phone, dir) {
+  if (phone === 'old') {
+    document.getElementById('p-old-' + oldStep).classList.remove('active');
+    oldStep = Math.max(0, Math.min(oldTotal - 1, oldStep + dir));
+    document.getElementById('p-old-' + oldStep).classList.add('active');
+    updateDots('psteps-old', oldStep, oldTotal, '#111', '#e5e7eb');
+    document.getElementById('old-ctr').textContent = (oldStep+1) + ' / ' + oldTotal;
+    document.getElementById('old-prev').disabled = oldStep === 0;
+    document.getElementById('old-next').disabled = oldStep === oldTotal - 1;
+  } else {
+    document.getElementById('p-new-' + newStep).classList.remove('active');
+    newStep = Math.max(0, Math.min(newTotal - 1, newStep + dir));
+    document.getElementById('p-new-' + newStep).classList.add('active');
+    updateDots('psteps-new', newStep, newTotal, '#00c805', '#e5e7eb');
+    document.getElementById('new-ctr').textContent = (newStep+1) + ' / ' + newTotal;
+    document.getElementById('new-prev').disabled = newStep === 0;
+    document.getElementById('new-next').disabled = newStep === newTotal - 1;
+  }
+}
+
+function updateDots(id, current, total, activeColor, inactiveColor) {
+  const dots = document.getElementById(id).querySelectorAll('.proto-dot');
+  dots.forEach((d, i) => {
+    d.style.width = i === current ? '16px' : '6px';
+    d.style.background = i === current ? activeColor : inactiveColor;
+  });
+}
+</script>
+</body>
+</html>

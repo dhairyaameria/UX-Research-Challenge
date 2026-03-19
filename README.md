@@ -35,16 +35,3 @@ Single-page UX case study for the **SnapRefund UI/UX Technical Challenge**: a re
 6. **Design decisions** — Rationale tied to pain points.  
 7. **Validation plan** — What to test and how to measure success.  
 8. **Conclusion** — Principles for trustworthy fintech UX.
-
----
-
-## Tech
-
-- Static **HTML / CSS / JavaScript** (no frameworks).
-- Fonts loaded from Google Fonts (Playfair Display, Source Serif 4, DM Mono).
-
----
-
-## License / use
-
-Submitted as coursework / challenge deliverable. Robinhood and app screenshots are used for educational critique only.

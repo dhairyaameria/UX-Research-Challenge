@@ -15,16 +15,6 @@ Single-page UX case study for the **SnapRefund UI/UX Technical Challenge**: a re
 
 ---
 
-## How to view
-
-1. Clone or download this folder.
-2. Open **`index.html`** in Chrome, Safari, or Firefox (double-click or *File → Open*).
-3. Use the top nav to jump to sections, or scroll. The **Interactive Prototype** section has prev/next controls for the current vs. redesigned phone flows.
-
-> **Note:** Keep the JPG files next to `index.html` so image paths resolve correctly.
-
----
-
 ## Case study outline (high level)
 
 1. **Background** — Why the withdrawal experience matters for Robinhood users.  
